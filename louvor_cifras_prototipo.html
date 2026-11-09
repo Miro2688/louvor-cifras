@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#17142d">
+<title>Louvor Cifras</title>
+<style>
+:root{--bg:#f5f3f8;--ink:#211d32;--muted:#777187;--navy:#17142d;--panel:#fff;--gold:#d7b76d;--purple:#30294b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:var(--navy);color:white;padding:22px 18px 20px;border-radius:0 0 24px 24px}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:14px;background:var(--purple);display:grid;place-items:center;color:var(--gold);font-size:24px}
+h1{font-size:22px;margin:0}.tag{font-size:12px;color:#c7bedb;margin-top:3px}
+.search{margin-top:18px;display:flex;gap:8px}.search input{flex:1;min-width:0;border:0;border-radius:12px;padding:13px;font-size:15px}
+main{max-width:760px;margin:auto;padding:16px 14px 90px}.section-title{font-size:17px;margin:20px 2px 10px}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.tile{background:var(--panel);border:1px solid #e9e5ef;border-radius:16px;padding:15px;text-align:left;color:var(--ink);font-weight:650;cursor:pointer}.tile span{display:block;color:var(--muted);font-weight:400;font-size:12px;margin-top:4px}.tile b{font-size:23px;display:block;color:#8c7440;margin-bottom:6px}
+.card{background:var(--panel);border:1px solid #e9e5ef;border-radius:16px;padding:15px;margin:10px 0}
+.song-row{display:flex;align-items:center;gap:10px}.song-row .info{flex:1;min-width:0}.song-row strong{display:block}.song-row small{color:var(--muted)}
+button{font:inherit;cursor:pointer}.btn{border:0;border-radius:11px;background:var(--purple);color:#fff;padding:10px 13px}.btn.light{background:#eeeaf4;color:var(--ink)}.btn.gold{background:#d7b76d;color:#211d32}.iconbtn{border:0;background:transparent;font-size:21px;color:#8c7440;padding:6px}
+.hidden{display:none!important}.muted{color:var(--muted);font-size:13px}.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+select,input,textarea{font:inherit}.field{width:100%;padding:11px;border:1px solid #ded8e8;border-radius:10px;background:white;margin:5px 0 12px}
+.lyrics{white-space:pre-wrap;line-height:2.1;font-size:17px;overflow-wrap:anywhere}.chord{color:#9a762a;font-weight:750}.songhead{display:flex;justify-content:space-between;gap:10px;align-items:start}.songhead h2{margin:0;font-size:21px}.tabs{display:flex;gap:8px;overflow:auto;margin:14px 0}.tabs button{white-space:nowrap}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e9e5ef;display:flex;justify-content:space-around;padding:9px 4px calc(9px + env(safe-area-inset-bottom));z-index:4}
+nav button{border:0;background:none;color:#716b80;font-size:12px;padding:5px}nav button.active{color:#80652e;font-weight:700}
+.notice{background:#fff8e7;border:1px solid #f0dfb3;border-radius:12px;padding:12px;font-size:12px;color:#66552d;line-height:1.5}
+.empty{padding:22px;text-align:center;color:var(--muted)}
+@media(min-width:600px){main{padding-top:22px}.tiles{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><div class="logo">♫</div><div><h1>Louvor Cifras</h1><div class="tag">Sua música, seu ministério.</div></div></div>
+ <div class="search"><input id="search" placeholder="Buscar música ou cantor..." aria-label="Buscar música"><button class="btn gold" onclick="showPage('search')">Buscar</button></div>
+</header>
+<main>
+<section id="home">
+ <div class="section-title">Bem-vindo!</div>
+ <div class="tiles">
+  <button class="tile" onclick="showPage('search')"><b>♫</b>Letras e cifras<span>Encontre músicas</span></button>
+  <button class="tile" onclick="showPage('repertoire')"><b>☷</b>Repertórios<span>Organize seus cultos</span></button>
+  <button class="tile" onclick="showPage('favorites')"><b>♡</b>Favoritas<span>Suas músicas salvas</span></button>
+  <button class="tile" onclick="showPage('tools')"><b>♬</b>Ferramentas<span>Tom e rolagem</span></button>
+ </div>
+ <div class="section-title">Músicas de demonstração</div>
+ <div id="homeSongs"></div>
+ <div class="notice">Esta versão inicial contém somente uma composição original de demonstração. Letras comerciais deverão ser incluídas com autorização dos titulares dos direitos.</div>
+</section>
+<section id="searchPage" class="hidden">
+ <div class="section-title">Buscar músicas</div>
+ <input class="field" id="searchPageInput" placeholder="Digite o título ou artista">
+ <div id="searchResults"></div>
+ <button class="btn" onclick="openAdd()">＋ Adicionar música autorizada</button>
+</section>
+<section id="favoritesPage" class="hidden"><div class="section-title">Minhas favoritas</div><div id="favoriteList"></div></section>
+<section id="repertoirePage" class="hidden">
+ <div class="section-title">Meu repertório</div>
+ <p class="muted">Monte uma lista para o culto ou ensaio. Toque no coração de uma música para favoritar e depois adicione-a ao repertório.</p>
+ <div id="repertoireList"></div>
+</section>
+<section id="toolsPage" class="hidden">
+ <div class="section-title">Ferramentas musicais</div>
+ <div class="card"><strong>Transposição de tom</strong><p class="muted">Abra uma música e use os botões + e − para mudar o tom dos acordes.</p></div>
+ <div class="card"><strong>Rolagem automática</strong><p class="muted">Na tela da música, ajuste a velocidade e inicie a rolagem durante a execução.</p></div>
+ <div class="card"><strong>Uso offline</strong><p class="muted">As músicas cadastradas neste aparelho ficam salvas localmente neste protótipo.</p></div>
+</section>
+<section id="songPage" class="hidden">
+ <div class="songhead"><div><h2 id="songTitle"></h2><div class="muted" id="songArtist"></div></div><button class="iconbtn" id="favBtn" title="Favoritar">♡</button></div>
+ <div class="toolbar">
+  <button class="btn light" onclick="transpose(-1)">Tom −</button><span class="muted" id="keyLabel" style="align-self:center"></span><button class="btn light" onclick="transpose(1)">Tom +</button>
+  <button class="btn light" onclick="addToRepertoire()">＋ Repertório</button>
+ </div>
+ <div class="card"><div class="toolbar"><label class="muted">Rolagem:</label><select id="speed" class="field" style="width:auto;margin:0;padding:7px"><option value="1">Lenta</option><option value="2" selected>Normal</option><option value="4">Rápida</option></select><button class="btn" id="scrollBtn" onclick="toggleScroll()">Iniciar</button></div><div class="lyrics" id="lyrics"></div></div>
+ <button class="btn light" onclick="showPage('search')">← Voltar às músicas</button>
+</section>
+<section id="addPage" class="hidden">
+ <div class="section-title">Adicionar música autorizada</div>
+ <div class="notice">Cadastre somente músicas próprias, de domínio público ou cujo titular tenha autorizado o uso. Não use letras copiadas de sites sem licença.</div>
+ <label class="muted">Título</label><input class="field" id="newTitle" placeholder="Título da música">
+ <label class="muted">Artista / compositor</label><input class="field" id="newArtist" placeholder="Nome do artista ou compositor">
+ <label class="muted">Tom original</label><select class="field" id="newKey"><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option><option>A</option><option>B</option></select>
+ <label class="muted">Letra e cifras (use [C], [G], [Am] antes dos versos)</label><textarea class="field" id="newLyrics" rows="9" placeholder="[C] Exemplo de verso original&#10;[G] Outro verso..."></textarea>
+ <label><input type="checkbox" id="rightsOk"> Confirmo que tenho autorização ou os direitos necessários para cadastrar este conteúdo.</label>
+ <div class="toolbar"><button class="btn" onclick="saveSong()">Salvar música</button><button class="btn light" onclick="showPage('search')">Cancelar</button></div>
+</section>
+</main>
+<nav>
+ <button class="active" data-page="home" onclick="showPage('home')">⌂<br>Início</button>
+ <button data-page="search" onclick="showPage('search')">⌕<br>Buscar</button>
+ <button data-page="favorites" onclick="showPage('favorites')">♡<br>Favoritas</button>
+ <button data-page="repertoire" onclick="showPage('repertoire')">☷<br>Repertório</button>
+</nav>
+<script>
+const originalSongs=[{
+ id:"demo1",title:"Tua Luz Me Guia",artist:"Louvor Cifras — composição original de demonstração",key:"G",
+ lyrics:"[G] Quando a noite vem e eu não vejo o caminho\\n[Em] Tua voz me chama, nunca estou sozinho\\n[C] Minha esperança encontro em Ti\\n[D] Tua luz me guia até o fim\\n\\n[G] Mesmo em meio à tempestade\\n[Em] Tua graça é minha verdade\\n[C] Meu coração descansa em Ti\\n[D] Para sempre vou Te seguir"
+}];
+let songs=JSON.parse(localStorage.getItem("lc_songs")||"null")||originalSongs;
+let favorites=JSON.parse(localStorage.getItem("lc_favs")||"[]");
+let repertoire=JSON.parse(localStorage.getItem("lc_rep")||"[]");
+let current=null,shift=0,scrollTimer=null;
+const notes=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+const aliases={"Db":"C#","Eb":"D#","Gb":"F#","Ab":"G#","Bb":"A#"};
+function persist(){localStorage.setItem("lc_songs",JSON.stringify(songs));localStorage.setItem("lc_favs",JSON.stringify(favorites));localStorage.setItem("lc_rep",JSON.stringify(repertoire))}
+function showPage(p){stopScroll();["home","searchPage","favoritesPage","repertoirePage","toolsPage","songPage","addPage"].forEach(id=>document.getElementById(id).classList.add("hidden"));let id=p==="search"?"searchPage":p==="favorites"?"favoritesPage":p==="repertoire"?"repertoirePage":p==="tools"?"toolsPage":p==="song"?"songPage":p==="add"?"addPage":"home";document.getElementById(id).classList.remove("hidden");document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===p));if(p==="home")renderHome();if(p==="search")renderSearch();if(p==="favorites")renderFavorites();if(p==="repertoire")renderRepertoire()}
+function songCard(s){return `<div class="card song-row"><div class="info"><strong>${esc(s.title)}</strong><small>${esc(s.artist)}</small></div><button class="iconbtn" onclick="toggleFav('${s.id}')">${favorites.includes(s.id)?"♥":"♡"}</button><button class="btn light" onclick="openSong('${s.id}')">Abrir</button></div>`}
+function renderHome(){document.getElementById("homeSongs").innerHTML=songs.map(songCard).join("")||'<div class="empty">Nenhuma música cadastrada.</div>'}
+function renderSearch(){let q=(document.getElementById("searchPageInput").value||document.getElementById("search").value||"").toLowerCase();let a=songs.filter(s=>(s.title+" "+s.artist).toLowerCase().includes(q));document.getElementById("searchResults").innerHTML=a.map(songCard).join("")||'<div class="empty">Nenhuma música encontrada.</div>'}
+document.getElementById("search").addEventListener("input",e=>{document.getElementById("searchPageInput").value=e.target.value;showPage("search")});
+document.getElementById("searchPageInput").addEventListener("input",renderSearch);
+function renderFavorites(){let a=songs.filter(s=>favorites.includes(s.id));document.getElementById("favoriteList").innerHTML=a.map(songCard).join("")||'<div class="empty">Você ainda não favoritou músicas.</div>'}
+function renderRepertoire(){let a=songs.filter(s=>repertoire.includes(s.id));document.getElementById("repertoireList").innerHTML=a.map((s,i)=>`<div class="card song-row"><div class="info"><strong>${i+1}. ${esc(s.title)}</strong><small>${esc(s.artist)}</small></div><button class="btn light" onclick="openSong('${s.id}')">Abrir</button><button class="iconbtn" onclick="removeRep('${s.id}')">×</button></div>`).join("")||'<div class="empty">Seu repertório está vazio. Abra uma música e toque em “Repertório”.</div>'}
+function openSong(id){current=songs.find(s=>s.id===id);if(!current)return;shift=0;document.getElementById("songTitle").textContent=current.title;document.getElementById("songArtist").textContent=current.artist;document.getElementById("favBtn").textContent=favorites.includes(id)?"♥":"♡";document.getElementById("favBtn").onclick=()=>{toggleFav(id);document.getElementById("favBtn").textContent=favorites.includes(id)?"♥":"♡"};renderLyrics();showPage("song")}
+function renderLyrics(){let k=notes.indexOf(current.key);let newKey=notes[(k+shift+12)%12];document.getElementById("keyLabel").textContent="Tom: "+newKey;let txt=current.lyrics.replace(/\[([A-G](?:#|b)?m?(?:7|9|sus4|add9)?)\]/g,(m,ch)=>{let root=ch.match(/^[A-G](?:#|b)?/)[0],suffix=ch.slice(root.length);let normalized=aliases[root]||root;let ix=notes.indexOf(normalized);return '<span class="chord">['+notes[(ix+shift+12)%12]+suffix+']</span>'});document.getElementById("lyrics").innerHTML=txt.replace(/\n/g,"<br>")}
+function transpose(n){shift+=n;renderLyrics()}
+function toggleFav(id){favorites=favorites.includes(id)?favorites.filter(x=>x!==id):[...favorites,id];persist();renderHome();renderFavorites()}
+function addToRepertoire(){if(!repertoire.includes(current.id))repertoire.push(current.id);persist();alert("Música adicionada ao repertório.");}
+function removeRep(id){repertoire=repertoire.filter(x=>x!==id);persist();renderRepertoire()}
+function toggleScroll(){if(scrollTimer){stopScroll();return}document.getElementById("scrollBtn").textContent="Pausar";let speed=Number(document.getElementById("speed").value);scrollTimer=setInterval(()=>window.scrollBy(0, speed),70)}
+function stopScroll(){if(scrollTimer){clearInterval(scrollTimer);scrollTimer=null}let b=document.getElementById("scrollBtn");if(b)b.textContent="Iniciar"}
+function openAdd(){showPage("add")}
+function saveSong(){let title=document.getElementById("newTitle").value.trim(),artist=document.getElementById("newArtist").value.trim(),key=document.getElementById("newKey").value,lyrics=document.getElementById("newLyrics").value.trim();if(!title||!lyrics||!document.getElementById("rightsOk").checked){alert("Preencha o título e a letra e confirme que possui os direitos ou autorização.");return}songs.push({id:"s"+Date.now(),title,artist:artist||"Autor não informado",key,lyrics});persist();["newTitle","newArtist","newLyrics"].forEach(id=>document.getElementById(id).value="");document.getElementById("rightsOk").checked=false;showPage("search");alert("Música salva neste aparelho.")}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+renderHome();
+</script>
+</body></html>
